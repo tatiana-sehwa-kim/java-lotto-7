@@ -18,12 +18,20 @@ public class Lotto {
             throw new IllegalArgumentException("[ERROR] 로또 번호는 6개여야 합니다.");
         }
     }
-
     // TODO: 추가 기능 구현
 
-    public void generate() {
-        List<Integer> randomNumbers = Randoms.pickUniqueNumbersInRange(1, 45, 6);
-        Collections.sort(randomNumbers);
-        Lotto lotto = new Lotto(randomNumbers);
+    public Lotto() {
+        this(Randoms.pickUniqueNumbersInRange(1, 45, 6).stream()
+                .sorted()
+                .toList());
+    }
+
+    public List<Integer> getNumbers() {
+        return numbers;
+    }
+
+    @Override
+    public String toString() {
+        return numbers.toString();
     }
 }

@@ -1,32 +1,98 @@
 package lotto;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class CheckNumber {
+    private final List<Integer> winningNumber;
+    private final int bonusNumber;
 
-    public void calculate() {
-        got3Numbers();
-        got4Numbers();
-        got5Numbers();
-        got5NumbersAndBonus();
-        got6Numbers();
+    public CheckNumber(String winningNumber, String bonusNumber) {
+        List<Integer> parsedWinningNumber = toList(winningNumber);
+        int parsedBonusNumber = toNumber(bonusNumber);
+        validateBonusDuplicate(parsedWinningNumber, parsedBonusNumber);
+
+        this.winningNumber = parsedWinningNumber;
+        this.bonusNumber = parsedBonusNumber;
     }
 
-    public void got3Numbers() {     // 계산
-        System.out.println("3개 일치 (5,000) - " + + "개");
+    public List<Integer> getWinningNumber() {
+        return winningNumber;
     }
 
-    public void got4Numbers() {
-        System.out.println("4개 일치 (50,000) - " + + "개");
+    public int getBonusNumber() {
+        return bonusNumber;
     }
 
-    public void got5Numbers() {
-        System.out.println("5개 일치 (1,500,000) - " + + "개");
+    public List<Integer> toList(String winningNumber) {
+        validateNotBlank(winningNumber);
+        String[] tokens = winningNumber.split(",");
+        validateSize(tokens);
+
+        List<Integer> numbers = new ArrayList<>();
+        for (String token : tokens) {
+            numbers.add(toNumber(token));
+        }
+        validateDuplicates(numbers);
+        return numbers;
     }
 
-    public void got5NumbersAndBonus() {
-        System.out.println("5개 일치, 보너스 볼 일치 (30,000,000) - " + + "개");
+    public int toNumber(String input) {
+        validateNotBlank(input);
+        int number = parseInt(input.trim());
+        isValid(number);
+        return number;
     }
 
-    public void got6Numbers() {
-        System.out.println("6개 일치 (2,000,000,000) - " + + "개");
+    public void isValid(int number) {
+        if (number < 1 || number > 45) {
+            throw new IllegalArgumentException("[ERROR] 로또 번호는 1부터 45 사이의 숫자여야 합니다.");
+        }
+    }
+
+    private void validateNotBlank(String input) {
+        if (input == null || input.isBlank()) {
+            throw new IllegalArgumentException("[ERROR] 값을 입력해야 합니다.");
+        }
+    }
+
+    private void validateSize(String[] tokens) {
+        if (tokens.length != 6) {
+            throw new IllegalArgumentException("[ERROR] 당첨 번호는 6개여야 합니다.");
+        }
+    }
+
+    private int parseInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("[ERROR] 숫자만 입력해야 합니다.");
+        }
+    }
+
+    private void validateDuplicates(List<Integer> numbers) {
+        Set<Integer> uniqueNumbers = new HashSet<>(numbers);
+        if (uniqueNumbers.size() != numbers.size()) {
+            throw new IllegalArgumentException("[ERROR] 당첨 번호는 중복될 수 없습니다.");
+        }
+    }
+
+    private void validateBonusDuplicate(List<Integer> numbers, int bonus) {
+        if (numbers.contains(bonus)) {
+            throw new IllegalArgumentException("[ERROR] 보너스 번호는 당첨 번호와 중복될 수 없습니다.");
+        }
+    }
+
+    // 추가
+    public int countMatch(Lotto userLotto) {
+        return (int) userLotto.getNumbers().stream()
+                .filter(winningNumber::contains)
+                .count();
+    }
+
+    public boolean isBonusMatch(Lotto userLotto) {
+        return userLotto.getNumbers().contains(bonusNumber);
     }
 }

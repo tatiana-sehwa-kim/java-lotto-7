@@ -5,8 +5,6 @@ public class ProfitRate {
     private double profitRate;
 
     public void matchingNumber() {
-        System.out.println("당첨 통계");
-        CheckNumber checkNumber = new CheckNumber();
     }
 
 
